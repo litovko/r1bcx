@@ -1,8 +1,10 @@
-QT += qml quick
+QT += qml quick multimedia
 
 CONFIG += c++11
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    c_audio.cpp \
+    c_audio_input.cpp
 
 RESOURCES += qml.qrc
 
@@ -27,3 +29,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+HEADERS += \
+    c_audio.h \
+    c_audio_input.h
+
+DISTFILES += \
+    js/Log.js \
+    js/Log.js
