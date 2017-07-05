@@ -6,6 +6,12 @@
 #include <QQmlListProperty>
 #include <qstringlist.h>
 #include <qaudioinput.h>
+#include <xyseriesiodevice.h>
+//#include <QtCharts/QChartView>
+#include <QtCharts/QLineSeries>
+#include <frequencyspectrum.h>
+#include <spectrumanalyser.h>
+
 
 //-----------------------------------------------------------------------------
 // Macros
@@ -25,20 +31,40 @@
 class c_audio: public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QStringList availableDevices READ availableDevices)
+    Q_PROPERTY(QStringList availableDevices READ availableDevices CONSTANT)
+    Q_PROPERTY(QLineSeries* series READ series WRITE setSeries NOTIFY seriesChanged)
+    Q_PROPERTY(QLineSeries* freq READ freq WRITE setFreq NOTIFY freqChanged)
+
 public:
     explicit c_audio(QObject *parent = 0);
     virtual ~c_audio();
+    QLineSeries *series() const;
+    void setSeries(QLineSeries *series);
+
+
+    QLineSeries *freq() const;
+    void setFreq(QLineSeries *freq);
+
 private slots:
     void audioDataReady();
+signals:
+    void chartChanged();
+    void seriesChanged();
+    void freqChanged();
 private:
-
     QStringList  availableDevices();
     //=============================
     QAudioInput* m_audioInput;
-    QIODevice *  m_audioQIO;
+//    QIODevice *  m_audioQIO;
     QByteArray   m_buffer;
 
+    XYSeriesIODevice *m_device=0;
+    QLineSeries *m_series;
+//============== spectr ===============
+    QLineSeries *m_freq;
+    FrequencySpectrum m_freq_spectrum;
+    QAudioFormat        m_format;
+    SpectrumAnalyser    m_spectrumAnalyser;
 
 };
 
