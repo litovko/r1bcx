@@ -42,7 +42,7 @@ macx {
 #target.path = $$[QT_INSTALL_EXAMPLES]/multimedia/spectrum
 #INSTALLS += target
 
-build_pass:CONFIG(debug, debug|release) {
-    unix: TARGET = $$join(TARGET,,,_debug)
-    else: TARGET = $$join(TARGET,,,d)
-}
+#build_pass:CONFIG(debug, debug|release) {
+#    unix: TARGET = $$join(TARGET,,,_debug)
+#    else: TARGET = $$join(TARGET,,,d)
+#}

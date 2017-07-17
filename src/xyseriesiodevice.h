@@ -43,7 +43,7 @@ class XYSeriesIODevice : public QIODevice
 {
     Q_OBJECT
 public:
-    explicit XYSeriesIODevice(QXYSeries * series, QObject *parent = 0);
+    explicit XYSeriesIODevice(QXYSeries * series, qint16 samplesize,QObject *parent = 0);
 
 protected:
     virtual qint64 readData(char * data, qint64 maxSize);
@@ -51,6 +51,8 @@ protected:
 
 private:
     QXYSeries *m_series;
+    qint16 m_range;
+    qint16 m_samplesize; // in bytes
 };
 
 #endif // XYSERIESIODEVICE_H

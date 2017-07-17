@@ -29,11 +29,25 @@
 
 #include "xyseriesiodevice.h"
 #include <QtCharts/QXYSeries>
+#include <QDebug>
+#include <QValueAxis>
 
-XYSeriesIODevice::XYSeriesIODevice(QXYSeries * series, QObject *parent) :
+XYSeriesIODevice::XYSeriesIODevice(QXYSeries * series, qint16 samplesize, QObject *parent) :
     QIODevice(parent),
-    m_series(series)
+    m_series(series),
+    m_range(2000),
+    m_samplesize(samplesize)
+
 {
+    QAbstractAxis* ax;
+    foreach (QAbstractAxis* axis, m_series->attachedAxes()) {
+        //qDebug()<<axis->orientation(); //Qt::Orientation(Horizontal)
+        if (axis->orientation()==Qt::Horizontal) ax=axis;
+    }
+    if (qobject_cast<QValueAxis*>(ax)) m_range=qobject_cast<QValueAxis*>(ax)->max();
+    qDebug()<<"SampleSize:"<<m_samplesize
+            <<"\nRange:"<<m_range;
+
 }
 
 qint64 XYSeriesIODevice::readData(char * data, qint64 maxSize)
@@ -45,22 +59,32 @@ qint64 XYSeriesIODevice::readData(char * data, qint64 maxSize)
 
 qint64 XYSeriesIODevice::writeData(const char * data, qint64 maxSize)
 {
-    qint64 range = 2000;
+
     QVector<QPointF> oldPoints = m_series->pointsVector();
     QVector<QPointF> points;
-    int resolution = 1;
+//    qint16* ptr= static_cast<qint16*>(static_cast<void*>(data));
+    qint64 dsize=maxSize/m_samplesize;
 
-    if (oldPoints.count() < range) {
+    if (oldPoints.count() < m_range) {
         points = m_series->pointsVector();
     } else {
-        for (int i = maxSize/resolution; i < oldPoints.count(); i++)
-            points.append(QPointF(i - maxSize/resolution, oldPoints.at(i).y()));
+        for (int i = maxSize/m_samplesize; i < oldPoints.count(); i++)
+            points.append(QPointF(i - maxSize/m_samplesize, oldPoints.at(i).y()));
     }
 
     qint64 size = points.count();
-    for (int k = 0; k < maxSize/resolution; k++)
-        points.append(QPointF(k + size, ((quint8)data[resolution * k] - 128)/128.0));
+    for (int k = 0; k < dsize; k++){
+        //buf[0] | buf[1] << 8  two bytes to integer
+
+        points.append(QPointF(k + size,
+                          m_samplesize==2?(qint16)(((quint8)data[m_samplesize * k]|(quint8)data[m_samplesize * k+1]<<8))/32768.0:
+//                        //m_samplesize==2?((data[m_samplesize * k]|data[m_samplesize * k+1]<<8))/32768.0:
+                          ((quint8)data[k]-128)/128.0)
+                     );
+}
 
     m_series->replace(points);
+//    qDebug()<<"NP:"<<m_series->count()
+//           <<"\nSamples:"<<dsize;
     return maxSize;
 }

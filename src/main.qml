@@ -11,7 +11,7 @@ ApplicationWindow {
     visible: true
     width: 800
     height: 600
-    title: qsTr("Hello World")
+    title: qsTr("Wave display")
 
     CAudio{
         id: au
@@ -104,11 +104,26 @@ ApplicationWindow {
                     height: 100
                     anchors.right: parent.right
                     anchors.top: parent.top
+                    anchors.margins: 10
                     model: au.availableDevices
                     delegate: Button {
                         width: 300
                         text: modelData
+                        onClicked: au.currnet_device=text
                     }
+                }
+                Text {
+                    anchors.bottom: parent.bottom
+                    anchors.right: parent.right
+                    anchors.margins: 10
+                    text: au.currnet_device
+                }
+                Text {
+                    anchors.bottom: parent.bottom
+                    anchors.left: parent.left
+                    anchors.margins: 10
+                    color: "blue"
+                    text: "Sample rate:"+au.sample_rate+" Sample size:" +au.sample_size
                 }
 
             }

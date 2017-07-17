@@ -31,6 +31,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 
+
 HEADERS += \
     c_audio.h \
     c_audio_input.h \
@@ -58,12 +59,12 @@ DISTFILES += \
     android/gradlew.bat
 win32 {
     #message("* Using settings for WINDOWS->LIBRARY")
-    #message($$OUT_PWD)
+    message($$OUT_PWD)
     LIBS += -L$$OUT_PWD -llibfftreal
 }
 android {
-    ANDROID_PACKAGE_SOURCE_DIR=$$_PRO_FILE_PWD_/android
-    QT += androidextras
+#    ANDROID_PACKAGE_SOURCE_DIR=$$_PRO_FILE_PWD_/android
+#    QT += androidextras
     #message("* Using settings for Android-->LIBRARY")
     #message("-L$$OUT_PWD -llibfftreal")
     LIBS += "-L$$OUT_PWD libfftreal.so"
